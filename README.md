@@ -21,7 +21,7 @@ Gradle:
 
 ```gradle
 dependencies {
-    compile 'com.junkchen.blelib:blelib:1.1.0'
+    compile 'com.junkchen.blelib:blelib:1.2.0'
 }
 ```
 
