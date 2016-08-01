@@ -132,6 +132,11 @@ mBleService.setOnDataAvailableListener(new BleService.OnDataAvailableListener() 
 
 ## **Release Notes** ##
 
+- **blelib-1.2.1**（2016-07-30）
+	
+	- 添加了 readDescriptor() 、 readRemoteRssi() 和 requestMtu()三个方法。上个版本中添加了相应的接口而没有添加方法。
+	
+
 - **blelib-1.2.0**（2016-05-21）
 	
 	- 新增两个接口 OnReadRemoteRssiListener 和  OnMtuChangedListener 。

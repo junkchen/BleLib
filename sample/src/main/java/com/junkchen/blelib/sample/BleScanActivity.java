@@ -259,6 +259,7 @@ public class BleScanActivity extends AppCompatActivity {
         };
         lstv_devList.setAdapter(deviceAdapter);
         serviceList = new ArrayList<>();
+        characteristicList = new ArrayList<>();
         serviceAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, serviceList);
         lstv_showService.setAdapter(serviceAdapter);
     }
@@ -273,7 +274,6 @@ public class BleScanActivity extends AppCompatActivity {
             public void onServicesDiscovered(BluetoothGatt gatt, int status) {
                 if (status == BluetoothGatt.GATT_SUCCESS) {
                     gattServiceList = gatt.getServices();
-                    characteristicList = new ArrayList<>();
                     serviceList.clear();
                     for (BluetoothGattService service :
                             gattServiceList) {

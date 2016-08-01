@@ -16,6 +16,7 @@
 
 package com.junkchen.blelib;
 
+import android.Manifest;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -30,6 +31,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Binder;
+import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
@@ -428,6 +430,92 @@ public class BleService extends Service implements Constants, BleListener {
         descriptor.setValue(enabled ? BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE :
                 BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
         mBluetoothGatt.writeDescriptor(descriptor);
+    }
+
+    /**
+     * Reads the value for a given descriptor from the associated remote device.
+     * <p>
+     * <p>Once the read operation has been completed, the
+     * {@link BluetoothGattCallback#onDescriptorRead} callback is
+     * triggered, signaling the result of the operation.
+     * <p>
+     * <p>Requires {@link android.Manifest.permission#BLUETOOTH} permission.
+     *
+     * @param descriptor Descriptor value to read from the remote device
+     * @return true, if the read operation was initiated successfully
+     */
+    public boolean readDescriptor(BluetoothGattDescriptor descriptor) {
+        if (mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothGatt is null");
+            return false;
+        }
+        return mBluetoothGatt.readDescriptor(descriptor);
+    }
+
+    /**
+     * Reads the value for a given descriptor from the associated remote device.
+     *
+     * @param serviceUUID        remote device service uuid
+     * @param characteristicUUID remote device characteristic uuid
+     * @param descriptorUUID     remote device descriptor uuid
+     * @return true, if the read operation was initiated successfully
+     */
+    public boolean readDescriptor(String serviceUUID, String characteristicUUID,
+                                  String descriptorUUID) {
+        if (mBluetoothGatt == null) {
+            Log.w(TAG, "BluetoothGatt is null");
+            return false;
+        }
+//        try {
+        BluetoothGattService service =
+                mBluetoothGatt.getService(UUID.fromString(serviceUUID));
+        BluetoothGattCharacteristic characteristic =
+                service.getCharacteristic(UUID.fromString(characteristicUUID));
+        BluetoothGattDescriptor descriptor =
+                characteristic.getDescriptor(UUID.fromString(descriptorUUID));
+        return mBluetoothGatt.readDescriptor(descriptor);
+//        } catch (Exception e) {
+//            Log.e(TAG, "read descriptor exception", e);
+//            return false;
+//        }
+    }
+
+    /**
+     * Read the RSSI for a connected remote device.
+     * <p>
+     * <p>The {@link BluetoothGattCallback#onReadRemoteRssi} callback will be
+     * invoked when the RSSI value has been read.
+     * <p>
+     * <p>Requires {@link android.Manifest.permission#BLUETOOTH} permission.
+     *
+     * @return true, if the RSSI value has been requested successfully
+     */
+    public boolean readRemoteRssi() {
+        if (mBluetoothGatt == null) return false;
+        return mBluetoothGatt.readRemoteRssi();
+    }
+
+    /**
+     * Request an MTU size used for a given connection.
+     * <p>
+     * <p>When performing a write request operation (write without response),
+     * the data sent is truncated to the MTU size. This function may be used
+     * to request a larger MTU size to be able to send more data at once.
+     * <p>
+     * <p>A {@link BluetoothGattCallback#onMtuChanged} callback will indicate
+     * whether this operation was successful.
+     * <p>
+     * <p>Requires {@link Manifest.permission#BLUETOOTH} permission.
+     *
+     * @return true, if the new MTU value has been requested successfully
+     */
+    public boolean requestMtu(int mtu) {
+        if (mBluetoothGatt == null) return false;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {//Android API level >= 21
+            return mBluetoothGatt.requestMtu(mtu);
+        } else {
+            return false;
+        }
     }
 
     public boolean isConnect() {
