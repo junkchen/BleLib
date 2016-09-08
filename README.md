@@ -1,33 +1,33 @@
 #*BleLib*
 
 ----------
-BleLib是Android低功耗蓝牙4.0及以上开发的辅助库，一行代码解决Ble初始化、扫描、连接、特性读写、设置通知等操作。 
+BleLib 是 Android 低功耗蓝牙 4.0 及以上开发的辅助库，一行代码解决 Ble 初始化、扫描、连接、特性读写、设置通知等操作。 
 
-BleLib中的关键类：
+BleLib 中的关键类：
   
-- BleService是单个Ble连接操作的服务类  
-- GattAttributes类中包含了蓝牙联盟规定的服务和特征的UUID值
-- MultipleBleService类是可多个蓝牙设备同时连接的服务类
+- BleService 是单个 Ble 连接操作的服务类  
+- GattAttributes 类中包含了蓝牙联盟规定的服务和特征的 UUID 值
+- MultipleBleService 类是可多个蓝牙设备同时连接的服务类
 
 
 ##*Usage*
 
-可看博客： [使用BleLib的轻松搞定Android低功耗蓝牙Ble 4.0开发详解](http://blog.csdn.net/kjunchen/article/details/50909410)
+可看博客： [使用 BleLib 的轻松搞定 Android 低功耗蓝牙 Ble 4.0 开发详解](http://blog.csdn.net/kjunchen/article/details/50909410)
 
 ###*引入*
-BleLib库已上传至jcenter、maven central仓库  
-因此，在你项目Module中的build.gradle文件中添加库依赖即可，如下：  
+BleLib 库已上传至 jcenter、maven central 仓库  
+因此，在你项目 Module 中的 build.gradle 文件中添加库依赖即可，如下：  
 Gradle:
 
 ```gradle
 dependencies {
-    compile 'com.junkchen.blelib:blelib:1.2.0'
+    compile 'com.junkchen.blelib:blelib:1.2.2'
 }
 ```
 
-只此一句即可使用BleLib库，方便吧，要的就是这效果。  
+只此一句即可使用 BleLib 库，方便吧，要的就是这效果。  
 
-BleLib中的Ble继承了Service，因此建议绑定服务进行使用。  
+BleLib 中的 Ble 继承了 Service，因此建议绑定服务进行使用。  
   
 ```java
 private BleService mBleService;
@@ -128,9 +128,14 @@ mBleService.setOnDataAvailableListener(new BleService.OnDataAvailableListener() 
         //处理通知返回的数据
     }
 });
- ``` 
+```
 
 ## **Release Notes** ##
+
+- **blelib-1.2.2**（2016-09-08）
+
+    - 修复调用 scanLeDevice(false) 不能停止扫描的 bug 。
+
 
 - **blelib-1.2.1**（2016-07-30）
 	

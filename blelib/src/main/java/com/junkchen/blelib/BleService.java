@@ -166,8 +166,8 @@ public class BleService extends Service implements Constants, BleListener {
      * @param scanPeriod scan ble period time
      */
     public void scanLeDevice(final boolean enable, long scanPeriod) {
-        if (isScanning) return;
         if (enable) {
+            if (isScanning) return;
             //Stop scanning after a predefined scan period.
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -434,11 +434,11 @@ public class BleService extends Service implements Constants, BleListener {
 
     /**
      * Reads the value for a given descriptor from the associated remote device.
-     * <p>
+     *
      * <p>Once the read operation has been completed, the
      * {@link BluetoothGattCallback#onDescriptorRead} callback is
      * triggered, signaling the result of the operation.
-     * <p>
+     *
      * <p>Requires {@link android.Manifest.permission#BLUETOOTH} permission.
      *
      * @param descriptor Descriptor value to read from the remote device
@@ -482,10 +482,10 @@ public class BleService extends Service implements Constants, BleListener {
 
     /**
      * Read the RSSI for a connected remote device.
-     * <p>
+     *
      * <p>The {@link BluetoothGattCallback#onReadRemoteRssi} callback will be
      * invoked when the RSSI value has been read.
-     * <p>
+     *
      * <p>Requires {@link android.Manifest.permission#BLUETOOTH} permission.
      *
      * @return true, if the RSSI value has been requested successfully
@@ -497,16 +497,16 @@ public class BleService extends Service implements Constants, BleListener {
 
     /**
      * Request an MTU size used for a given connection.
-     * <p>
+     *
      * <p>When performing a write request operation (write without response),
      * the data sent is truncated to the MTU size. This function may be used
      * to request a larger MTU size to be able to send more data at once.
-     * <p>
+     *
      * <p>A {@link BluetoothGattCallback#onMtuChanged} callback will indicate
      * whether this operation was successful.
-     * <p>
-     * <p>Requires {@link Manifest.permission#BLUETOOTH} permission.
      *
+     * <p>Requires {@link Manifest.permission#BLUETOOTH} permission.
+     * @param mtu mtu
      * @return true, if the new MTU value has been requested successfully
      */
     public boolean requestMtu(int mtu) {

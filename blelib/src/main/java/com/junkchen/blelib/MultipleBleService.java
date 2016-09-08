@@ -169,9 +169,9 @@ public class MultipleBleService extends Service implements Constants, BleListene
      * @param scanPeriod scan ble period time
      */
     public void scanLeDevice(final boolean enable, long scanPeriod) {
-        Log.i(TAG, "scanLeDevice: Build.VERSION.SDK_INT = " + Build.VERSION.SDK_INT);
-        if (isScanning) return;
+//        Log.i(TAG, "scanLeDevice: Build.VERSION.SDK_INT = " + Build.VERSION.SDK_INT);
         if (enable) {
+            if (isScanning) return;
             //Stop scanning after a predefined scan period.
             new Handler().postDelayed(new Runnable() {
                 @Override
@@ -200,7 +200,6 @@ public class MultipleBleService extends Service implements Constants, BleListene
             } else {
                 mBluetoothAdapter.startLeScan(mLeScanCallback);
             }
-//            mBluetoothAdapter.getBluetoothLeScanner().startScan(mLeScanCallback);
         } else {
             isScanning = false;
             if (Build.VERSION.SDK_INT >= 21) {
@@ -213,7 +212,6 @@ public class MultipleBleService extends Service implements Constants, BleListene
                 mScanLeDeviceList.clear();
                 mScanLeDeviceList = null;
             }
-//            mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
         }
     }
 
@@ -489,11 +487,11 @@ public class MultipleBleService extends Service implements Constants, BleListene
 
     /**
      * Reads the value for a given descriptor from the associated remote device.
-     * <p>
+     *
      * <p>Once the read operation has been completed, the
      * {@link BluetoothGattCallback#onDescriptorRead} callback is
      * triggered, signaling the result of the operation.
-     * <p>
+     *
      * <p>Requires {@link android.Manifest.permission#BLUETOOTH} permission.
      *
      * @param address    The address of remote device
@@ -539,10 +537,10 @@ public class MultipleBleService extends Service implements Constants, BleListene
 
     /**
      * Read the RSSI for a connected remote device.
-     * <p>
+     *
      * <p>The {@link BluetoothGattCallback#onReadRemoteRssi} callback will be
      * invoked when the RSSI value has been read.
-     * <p>
+     *
      * <p>Requires {@link android.Manifest.permission#BLUETOOTH} permission.
      *
      * @param address The address of remote device
@@ -555,16 +553,18 @@ public class MultipleBleService extends Service implements Constants, BleListene
 
     /**
      * Request an MTU size used for a given connection.
-     * <p>
+     *
      * <p>When performing a write request operation (write without response),
      * the data sent is truncated to the MTU size. This function may be used
      * to request a larger MTU size to be able to send more data at once.
-     * <p>
+     *
      * <p>A {@link BluetoothGattCallback#onMtuChanged} callback will indicate
      * whether this operation was successful.
-     * <p>
+     *
      * <p>Requires {@link Manifest.permission#BLUETOOTH} permission.
      *
+     * @param address The address of remote device
+     * @param mtu mtu
      * @return true, if the new MTU value has been requested successfully
      */
     public boolean requestMtu(String address, int mtu) {
