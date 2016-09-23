@@ -51,7 +51,7 @@ public class BleService extends Service implements Constants, BleListener {
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
     private BluetoothGatt mBluetoothGatt;
-    private List<BluetoothDevice> mScanLeDeviceList;
+    private List<BluetoothDevice> mScanLeDeviceList = new ArrayList<>();
     private boolean isScanning;
     private boolean isConnect;
     private String mBluetoothDeviceAddress;
@@ -182,9 +182,6 @@ public class BleService extends Service implements Constants, BleListener {
 //                    mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
                 }
             }, scanPeriod);
-            if (mScanLeDeviceList == null) {
-                mScanLeDeviceList = new ArrayList<>();
-            }
             mScanLeDeviceList.clear();
             isScanning = true;
             mBluetoothAdapter.startLeScan(mScanCallback);
@@ -553,7 +550,7 @@ public class BleService extends Service implements Constants, BleListener {
     private final BluetoothAdapter.LeScanCallback mScanCallback = new BluetoothAdapter.LeScanCallback() {
         @Override
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-            if (mScanLeDeviceList.contains(device)) return;
+            if (device == null || mScanLeDeviceList.contains(device)) return;
             mScanLeDeviceList.add(device);
             if (mOnLeScanListener != null) {
                 mOnLeScanListener.onLeScan(device, rssi, scanRecord);

@@ -19,9 +19,9 @@ BleLib 库已上传至 jcenter、maven central 仓库
 因此，在你项目 Module 中的 build.gradle 文件中添加库依赖即可，如下：  
 Gradle:
 
-```gradle
+```.gradle
 dependencies {
-    compile 'com.junkchen.blelib:blelib:1.2.2'
+    compile 'com.junkchen.blelib:blelib:1.2.3'
 }
 ```
 
@@ -29,7 +29,7 @@ dependencies {
 
 BleLib 中的 Ble 继承了 Service，因此建议绑定服务进行使用。  
   
-```java
+```.java
 private BleService mBleService;
 private boolean mIsBind;
 private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -71,7 +71,7 @@ if (mIsBind) {
 
 当服务绑定后就可以进行如下操作了：   
 
-```java
+```.java
 mBleService.initialize();//Ble初始化操作  
 mBleService.enableBluetooth(boolean enable);//打开或关闭蓝牙  
 mBleService.scanLeDevice(boolean enable, long scanPeriod);//启动或停止扫描Ble设备  
@@ -86,7 +86,7 @@ mBleService.writeCharacteristic(BluetoothGattCharacteristic characteristic, byte
 
 设置监听回调接口，获取相应返回数据，获取扫描Ble结果、连接等操作也可以以接收广播的方式获取，但我个人觉得用监听的方式更好，广播有的值无法传递，而接口传递过来的是原始数据，在我的样例中有使用广播来接收扫描的结果和连接状态的改变。 
   
-```java
+```.java
 //Ble扫描回调
 mBleService.setOnLeScanListener(new BleService.OnLeScanListener() {
 @Override
@@ -132,6 +132,11 @@ mBleService.setOnDataAvailableListener(new BleService.OnDataAvailableListener() 
 
 ## **Release Notes** ##
 
+- **blelib-1.2.3**（2016-09-23）
+
+    - 修复扫描结果返回时出现空指针的 bug 。
+
+
 - **blelib-1.2.2**（2016-09-08）
 
     - 修复调用 scanLeDevice(false) 不能停止扫描的 bug 。
@@ -157,7 +162,7 @@ mBleService.setOnDataAvailableListener(new BleService.OnDataAvailableListener() 
 ##*License*
 
 BleLib is released under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0).
-```html
+```.html
 Copyright 2016 Junk Chen.
 
 Licensed under the Apache License, Version 2.0 (the "License");

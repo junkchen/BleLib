@@ -56,7 +56,7 @@ public class MultipleBleService extends Service implements Constants, BleListene
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
     private Map<String, BluetoothGatt> mBluetoothGattMap;
-    private List<BluetoothDevice> mScanLeDeviceList;
+    private List<BluetoothDevice> mScanLeDeviceList = new ArrayList<>();
     private boolean isScanning;
     private List<String> mConnectedAddressList;//Already connected remote device address
     //Stop scanning after 10 seconds.
@@ -190,9 +190,6 @@ public class MultipleBleService extends Service implements Constants, BleListene
 //                    mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
                 }
             }, scanPeriod);
-            if (mScanLeDeviceList == null) {
-                mScanLeDeviceList = new ArrayList<>();
-            }
             mScanLeDeviceList.clear();
             isScanning = true;
             if (Build.VERSION.SDK_INT >= 21) {
@@ -610,7 +607,7 @@ public class MultipleBleService extends Service implements Constants, BleListene
         public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
             Log.i(TAG, "device name: " + device.getName() + ", address: " + device.getAddress());
 //            Log.i(TAG, "mScanLeDeviceList.contains(device): " + mScanLeDeviceList.contains(device));
-            if (mScanLeDeviceList.contains(device)) return;
+            if (device == null || mScanLeDeviceList.contains(device)) return;
             mScanLeDeviceList.add(device);
             if (mOnLeScanListener != null) {
                 mOnLeScanListener.onLeScan(device, rssi, scanRecord);
