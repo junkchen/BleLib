@@ -185,7 +185,7 @@ public class MultipleBleService extends Service implements Constants, BleListene
                     broadcastUpdate(ACTION_SCAN_FINISHED);
                     if (mScanLeDeviceList != null) {
                         mScanLeDeviceList.clear();
-                        mScanLeDeviceList = null;
+                        //mScanLeDeviceList = null;
                     }
 //                    mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
                 }
@@ -207,7 +207,7 @@ public class MultipleBleService extends Service implements Constants, BleListene
             broadcastUpdate(ACTION_SCAN_FINISHED);
             if (mScanLeDeviceList != null) {
                 mScanLeDeviceList.clear();
-                mScanLeDeviceList = null;
+                //mScanLeDeviceList = null;
             }
         }
     }

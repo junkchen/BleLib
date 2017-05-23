@@ -177,7 +177,7 @@ public class BleService extends Service implements Constants, BleListener {
                     broadcastUpdate(ACTION_SCAN_FINISHED);
                     if (mScanLeDeviceList != null) {
                         mScanLeDeviceList.clear();
-                        mScanLeDeviceList = null;
+                        //mScanLeDeviceList = null;
                     }
 //                    mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
                 }
@@ -192,7 +192,7 @@ public class BleService extends Service implements Constants, BleListener {
             broadcastUpdate(ACTION_SCAN_FINISHED);
             if (mScanLeDeviceList != null) {
                 mScanLeDeviceList.clear();
-                mScanLeDeviceList = null;
+                //mScanLeDeviceList = null;
             }
 //            mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
         }
