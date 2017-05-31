@@ -1,6 +1,5 @@
-#*BleLib*
+# **BleLib** #
 
-----------
 BleLib 是 Android 低功耗蓝牙 4.0 及以上开发的辅助库，一行代码解决 Ble 初始化、扫描、连接、特性读写、设置通知等操作。 
 
 BleLib 中的关键类：
@@ -10,18 +9,23 @@ BleLib 中的关键类：
 - MultipleBleService 类是可多个蓝牙设备同时连接的服务类
 
 
-##*Usage*
+## **Screenshots** ##
+
+![](sample/screenshots/connect_single_device.png) ![](sample/screenshots/connect_multiple_devices.png)
+
+
+## **Usage** ##
 
 可看博客： [使用 BleLib 的轻松搞定 Android 低功耗蓝牙 Ble 4.0 开发详解](http://blog.csdn.net/kjunchen/article/details/50909410)
 
-###*引入*
+## **引入** ##
 BleLib 库已上传至 jcenter、maven central 仓库  
 因此，在你项目 Module 中的 build.gradle 文件中添加库依赖即可，如下：  
 Gradle:
 
 ```.gradle
 dependencies {
-    compile 'com.junkchen.blelib:blelib:1.2.3'
+    compile 'com.junkchen.blelib:blelib:1.2.4'
 }
 ```
 
@@ -132,6 +136,11 @@ mBleService.setOnDataAvailableListener(new BleService.OnDataAvailableListener() 
 
 ## **Release Notes** ##
 
+- **blelib-1.2.4**（2017-05-31）
+  
+  - 修复上个版本未解决的 bug，并优化代码。
+ 	
+
 - **blelib-1.2.3**（2016-09-23）
 
     - 修复扫描结果返回时出现空指针的 bug 。
@@ -154,14 +163,15 @@ mBleService.setOnDataAvailableListener(new BleService.OnDataAvailableListener() 
 	- 在 OnDataAvailableListener 接口中新增 onDescriptorRead() 方法 。
 
   
-##*Reference*
+## **Reference** ##
 
 [https://developer.android.com/guide/topics/connectivity/bluetooth-le.html](https://developer.android.com/guide/topics/connectivity/bluetooth-le.html)
 
 
-##*License*
+## **License** ##
 
 BleLib is released under the [Apache 2.0 license](http://www.apache.org/licenses/LICENSE-2.0).
+
 ```.html
 Copyright 2016 Junk Chen.
 

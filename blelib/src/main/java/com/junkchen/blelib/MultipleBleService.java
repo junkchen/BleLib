@@ -169,7 +169,6 @@ public class MultipleBleService extends Service implements Constants, BleListene
      * @param scanPeriod scan ble period time
      */
     public void scanLeDevice(final boolean enable, long scanPeriod) {
-//        Log.i(TAG, "scanLeDevice: Build.VERSION.SDK_INT = " + Build.VERSION.SDK_INT);
         if (enable) {
             if (isScanning) return;
             //Stop scanning after a predefined scan period.
@@ -177,38 +176,31 @@ public class MultipleBleService extends Service implements Constants, BleListene
                 @Override
                 public void run() {
                     isScanning = false;
-                    if (Build.VERSION.SDK_INT >= 21) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                         mBluetoothAdapter.getBluetoothLeScanner().stopScan(mScanCallback);
                     } else {
                         mBluetoothAdapter.stopLeScan(mLeScanCallback);
                     }
                     broadcastUpdate(ACTION_SCAN_FINISHED);
-                    if (mScanLeDeviceList != null) {
-                        mScanLeDeviceList.clear();
-                        mScanLeDeviceList = null;
-                    }
-//                    mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
+                    mScanLeDeviceList.clear();
                 }
             }, scanPeriod);
             mScanLeDeviceList.clear();
             isScanning = true;
-            if (Build.VERSION.SDK_INT >= 21) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 mBluetoothAdapter.getBluetoothLeScanner().startScan(mScanCallback);
             } else {
                 mBluetoothAdapter.startLeScan(mLeScanCallback);
             }
         } else {
             isScanning = false;
-            if (Build.VERSION.SDK_INT >= 21) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                 mBluetoothAdapter.getBluetoothLeScanner().stopScan(mScanCallback);
             } else {
                 mBluetoothAdapter.stopLeScan(mLeScanCallback);
             }
             broadcastUpdate(ACTION_SCAN_FINISHED);
-            if (mScanLeDeviceList != null) {
-                mScanLeDeviceList.clear();
-                mScanLeDeviceList = null;
-            }
+            mScanLeDeviceList.clear();
         }
     }
 
@@ -228,15 +220,6 @@ public class MultipleBleService extends Service implements Constants, BleListene
      */
     public boolean isScanning() {
         return isScanning;
-    }
-
-    /**
-     * Get scan ble devices
-     *
-     * @return scan le device list
-     */
-    public List<BluetoothDevice> getScanLeDevice() {
-        return mScanLeDeviceList;
     }
 
     /**
@@ -484,11 +467,11 @@ public class MultipleBleService extends Service implements Constants, BleListene
 
     /**
      * Reads the value for a given descriptor from the associated remote device.
-     *
+     * <p>
      * <p>Once the read operation has been completed, the
      * {@link BluetoothGattCallback#onDescriptorRead} callback is
      * triggered, signaling the result of the operation.
-     *
+     * <p>
      * <p>Requires {@link android.Manifest.permission#BLUETOOTH} permission.
      *
      * @param address    The address of remote device
@@ -534,10 +517,10 @@ public class MultipleBleService extends Service implements Constants, BleListene
 
     /**
      * Read the RSSI for a connected remote device.
-     *
+     * <p>
      * <p>The {@link BluetoothGattCallback#onReadRemoteRssi} callback will be
      * invoked when the RSSI value has been read.
-     *
+     * <p>
      * <p>Requires {@link android.Manifest.permission#BLUETOOTH} permission.
      *
      * @param address The address of remote device
@@ -550,18 +533,18 @@ public class MultipleBleService extends Service implements Constants, BleListene
 
     /**
      * Request an MTU size used for a given connection.
-     *
+     * <p>
      * <p>When performing a write request operation (write without response),
      * the data sent is truncated to the MTU size. This function may be used
      * to request a larger MTU size to be able to send more data at once.
-     *
+     * <p>
      * <p>A {@link BluetoothGattCallback#onMtuChanged} callback will indicate
      * whether this operation was successful.
-     *
+     * <p>
      * <p>Requires {@link Manifest.permission#BLUETOOTH} permission.
      *
      * @param address The address of remote device
-     * @param mtu mtu
+     * @param mtu     mtu
      * @return true, if the new MTU value has been requested successfully
      */
     public boolean requestMtu(String address, int mtu) {
@@ -600,24 +583,13 @@ public class MultipleBleService extends Service implements Constants, BleListene
     }
 
     /**
-     * Device scan callback
+     * Device scan callback.
+     * <p>
+     * Use mScanCallback if Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP,
+     * else use mLeScanCallback.
      */
-    private final BluetoothAdapter.LeScanCallback mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
-        @Override
-        public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-            Log.i(TAG, "device name: " + device.getName() + ", address: " + device.getAddress());
-//            Log.i(TAG, "mScanLeDeviceList.contains(device): " + mScanLeDeviceList.contains(device));
-            if (device == null || mScanLeDeviceList.contains(device)) return;
-            mScanLeDeviceList.add(device);
-            if (mOnLeScanListener != null) {
-                mOnLeScanListener.onLeScan(device, rssi, scanRecord);
-            }
-            broadcastUpdate(ACTION_BLUETOOTH_DEVICE, device);
-        }
-    };
-
-    //@SuppressLint("NewApi")
-    protected ScanCallback mScanCallback;
+    private ScanCallback mScanCallback;
+    private BluetoothAdapter.LeScanCallback mLeScanCallback;
 
     {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -635,6 +607,19 @@ public class MultipleBleService extends Service implements Constants, BleListene
                                 ", address: " + result.getDevice().getAddress() +
                                 ", rssi: " + result.getRssi() + ", scanRecord: " + result.getScanRecord());
                     }
+                }
+            };
+        } else {
+            mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
+                @Override
+                public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
+                    Log.i(TAG, "device name: " + device.getName() + ", address: " + device.getAddress());
+                    if (device == null || mScanLeDeviceList.contains(device)) return;
+                    mScanLeDeviceList.add(device);
+                    if (mOnLeScanListener != null) {
+                        mOnLeScanListener.onLeScan(device, rssi, scanRecord);
+                    }
+                    broadcastUpdate(ACTION_BLUETOOTH_DEVICE, device);
                 }
             };
         }

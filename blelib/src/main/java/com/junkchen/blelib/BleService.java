@@ -27,6 +27,8 @@ import android.bluetooth.BluetoothGattDescriptor;
 import android.bluetooth.BluetoothGattService;
 import android.bluetooth.BluetoothManager;
 import android.bluetooth.BluetoothProfile;
+import android.bluetooth.le.ScanCallback;
+import android.bluetooth.le.ScanResult;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -173,28 +175,31 @@ public class BleService extends Service implements Constants, BleListener {
                 @Override
                 public void run() {
                     isScanning = false;
-                    mBluetoothAdapter.stopLeScan(mScanCallback);
-                    broadcastUpdate(ACTION_SCAN_FINISHED);
-                    if (mScanLeDeviceList != null) {
-                        mScanLeDeviceList.clear();
-                        mScanLeDeviceList = null;
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        mBluetoothAdapter.getBluetoothLeScanner().stopScan(mScanCallback);
+                    } else {
+                        mBluetoothAdapter.stopLeScan(mLeScanCallback);
                     }
-//                    mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
+                    broadcastUpdate(ACTION_SCAN_FINISHED);
+                    mScanLeDeviceList.clear();
                 }
             }, scanPeriod);
             mScanLeDeviceList.clear();
             isScanning = true;
-            mBluetoothAdapter.startLeScan(mScanCallback);
-//            mBluetoothAdapter.getBluetoothLeScanner().startScan(mLeScanCallback);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mBluetoothAdapter.getBluetoothLeScanner().startScan(mScanCallback);
+            } else {
+                mBluetoothAdapter.startLeScan(mLeScanCallback);
+            }
         } else {
             isScanning = false;
-            mBluetoothAdapter.stopLeScan(mScanCallback);
-            broadcastUpdate(ACTION_SCAN_FINISHED);
-            if (mScanLeDeviceList != null) {
-                mScanLeDeviceList.clear();
-                mScanLeDeviceList = null;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                mBluetoothAdapter.getBluetoothLeScanner().stopScan(mScanCallback);
+            } else {
+                mBluetoothAdapter.stopLeScan(mLeScanCallback);
             }
-//            mBluetoothAdapter.getBluetoothLeScanner().stopScan(mLeScanCallback);
+            broadcastUpdate(ACTION_SCAN_FINISHED);
+            mScanLeDeviceList.clear();
         }
     }
 
@@ -214,15 +219,6 @@ public class BleService extends Service implements Constants, BleListener {
      */
     public boolean isScanning() {
         return isScanning;
-    }
-
-    /**
-     * Get scan ble devices
-     *
-     * @return scan le device list
-     */
-    public List<BluetoothDevice> getScanLeDevice() {
-        return mScanLeDeviceList;
     }
 
     /**
@@ -503,6 +499,7 @@ public class BleService extends Service implements Constants, BleListener {
      * whether this operation was successful.
      *
      * <p>Requires {@link Manifest.permission#BLUETOOTH} permission.
+     *
      * @param mtu mtu
      * @return true, if the new MTU value has been requested successfully
      */
@@ -545,26 +542,47 @@ public class BleService extends Service implements Constants, BleListener {
     }
 
     /**
-     * Device scan callback
+     * Device scan callback.
+     * <p>
+     * Use mScanCallback if Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP,
+     * else use mLeScanCallback.
      */
-    private final BluetoothAdapter.LeScanCallback mScanCallback = new BluetoothAdapter.LeScanCallback() {
-        @Override
-        public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
-            if (device == null || mScanLeDeviceList.contains(device)) return;
-            mScanLeDeviceList.add(device);
-            if (mOnLeScanListener != null) {
-                mOnLeScanListener.onLeScan(device, rssi, scanRecord);
-            }
-            broadcastUpdate(ACTION_BLUETOOTH_DEVICE, device);
-        }
-    };
+    private ScanCallback mScanCallback;
+    private BluetoothAdapter.LeScanCallback mLeScanCallback;
 
-    /*private final ScanCallback mLeScanCallback = new ScanCallback() {
-        @Override
-        public void onScanResult(int callbackType, ScanResult result) {
-            super.onScanResult(callbackType, result);
+    {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            mScanCallback = new ScanCallback() {
+                @Override
+                public void onScanResult(int callbackType, ScanResult result) {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                        if (mScanLeDeviceList.contains(result.getDevice())) return;
+                        mScanLeDeviceList.add(result.getDevice());
+                        if (mOnLeScanListener != null) {
+                            mOnLeScanListener.onLeScan(result.getDevice(), result.getRssi(), result.getScanRecord().getBytes());
+                        }
+                        broadcastUpdate(ACTION_BLUETOOTH_DEVICE, result.getDevice());
+                        Log.i(TAG, "onScanResult: name: " + result.getDevice().getName() +
+                                ", address: " + result.getDevice().getAddress() +
+                                ", rssi: " + result.getRssi() + ", scanRecord: " + result.getScanRecord());
+                    }
+                }
+            };
+        } else {
+            mLeScanCallback = new BluetoothAdapter.LeScanCallback() {
+                @Override
+                public void onLeScan(BluetoothDevice device, int rssi, byte[] scanRecord) {
+                    Log.i(TAG, "device name: " + device.getName() + ", address: " + device.getAddress());
+                    if (device == null || mScanLeDeviceList.contains(device)) return;
+                    mScanLeDeviceList.add(device);
+                    if (mOnLeScanListener != null) {
+                        mOnLeScanListener.onLeScan(device, rssi, scanRecord);
+                    }
+                    broadcastUpdate(ACTION_BLUETOOTH_DEVICE, device);
+                }
+            };
         }
-    };*/
+    }
 
     /**
      * Implements callback methods for GATT events that the app cares about.  For example,
